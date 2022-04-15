@@ -1,0 +1,18 @@
+version: '3.3'
+
+services:
+  docker-github_actions-heroku:
+    ports:
+      - $PORT:$PORT
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    # only if we use containers for local dev
+    # command: dev
+    # volumes:
+    # - .:/usr/src/app
+    # - /usr/src/app/node_modules
+    # - /usr/src/app/build
+    env_file:
+      - .env
