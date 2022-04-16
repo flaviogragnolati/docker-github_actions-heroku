@@ -36,5 +36,5 @@ jobs:
         uses: peter-evans/create-pull-request@v4
         with:
           title: 'Merge Develop to Testing'
-          branch: testing
+          branch: testing-promotion
           labels: automated-pr
