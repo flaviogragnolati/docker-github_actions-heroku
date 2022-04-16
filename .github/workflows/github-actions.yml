@@ -3,34 +3,35 @@ name: Nodejs Development Pipe
 
 on:
   push:
-    branches: [ development ]
+    branches: [development]
   pull_request:
-    branches: [ development ]
+    branches: [development]
   workflow_dispatch: # To trigger manually
 
 jobs:
-  build:
+  lint-test-build:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
         node-version: [16.14.2]
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'yarn'
-    - run: yarn install --frozen-lockfile 
-    - run: yarn run lint
-    - run: yarn run test
-    - run: yarn run build
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
+      - run: yarn install --frozen-lockfile
+      - run: yarn run lint
+      - run: yarn run test
+      - run: yarn run build
 
   pull-request-testing:
+    needs: lint-test-build
     runs-on: ubuntu-20.04
-    steps:  
-    - name: Create Pull Request
-      uses: peter-evans/create-pull-request@v4
-      with:
-        commit-message: Merge Develop to Testing
+    steps:
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4
+        with:
+          commit-message: Merge Develop to Testing
