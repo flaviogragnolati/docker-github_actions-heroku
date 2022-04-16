@@ -1,7 +1,10 @@
 import express from 'express';
-const app = express();
 import dotenv from 'dotenv';
+
 dotenv.config();
+
+const app = express();
+
 const port = process.env.PORT || 6060;
 const secret = process.env.SECRET || 'ENV NOT LOADED';
 
