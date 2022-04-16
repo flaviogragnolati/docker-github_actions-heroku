@@ -38,3 +38,5 @@ jobs:
           title: 'Merge Develop to Testing'
           base: testing
           labels: automated-pr
+          branch: dev->test/patch
+          delete-branch: true
