@@ -7,7 +7,7 @@
     "build": "tsc",
     "dev": "ts-node-dev -r dotenv/config src/index.ts",
     "start": "npx ts-node dist/index.ts",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "echo \"PLACEHOLDER FOR TESTS: no test specified\" & exit 0",
     "lint": "node_modules/.bin/eslint src/**/*.ts"
   },
   "repository": {
