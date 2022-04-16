@@ -35,4 +35,7 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         with:
-          commit-message: Merge Develop to Testing
+          title: 'Merge Develop to Testing'
+          commit-message: Automatic PR Develop -> Testing
+          branch: testing
+          labels: automated-pr
