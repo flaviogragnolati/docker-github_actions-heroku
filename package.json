@@ -8,7 +8,7 @@
     "dev": "ts-node-dev -r dotenv/config src/index.ts",
     "start": "npx ts-node dist/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint src/**/*.ts"
+    "lint": "node_modules/.bin/eslint src/**/*.ts"
   },
   "repository": {
     "type": "git",
