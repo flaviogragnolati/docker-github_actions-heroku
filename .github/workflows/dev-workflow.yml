@@ -1,5 +1,5 @@
 # Lint+Test+Build+PR
-name: Nodejs Development Pipe
+name: Nodejs Development Pipeline
 
 on:
   push:
@@ -45,30 +45,3 @@ jobs:
           labels: automated-pr
           branch: dev->test/patch
           delete-branch: true
-
-
-on:
-  push:
-    branches: [testing]
-  pull_request:
-    branches: [testing]
-  workflow_dispatch: # To trigger manually
-jobs:
-  dockerize:
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v2
-      - uses: akhileshns/heroku-deploy@v3.12.12
-        with:
-          stack: container
-          branch: "testing"
-          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: ${{secrets.HEROKU_APP_NAME}}
-          heroku_email: ${{secrets.HEROKU_EMAIL}}
-          usedocker: true
-          docker_heroku_process_type: "web"
-          dontautocreate: true
-          healthcheck: "https://${{secrets.HEROKU_APP_NAME}}.herokuapp.com/health"
-          checkstring: "OK"
-          delay: 5
-          rollbackonhealthcheckfailed: true
