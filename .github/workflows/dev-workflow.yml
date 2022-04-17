@@ -8,6 +8,10 @@ on:
     branches: [development]
   workflow_dispatch: # To trigger manually
 
+env:
+  - name: STAGE
+    value: development
+
 jobs:
   lint-test-build:
     runs-on: ubuntu-20.04
