@@ -32,11 +32,15 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: testing
+    - name: Reset promotion branch
+      run: |
+        git fetch origin development:development
+        git reset --hard development
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
-        with:
           title: 'Merge Develop to Testing'
-          base: testing
           labels: automated-pr
           branch: dev->test/patch
           delete-branch: true
