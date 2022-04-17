@@ -9,8 +9,7 @@ on:
   workflow_dispatch: # To trigger manually
 
 env:
-  - name: STAGE
-    value: development
+  STAGE: dev
 
 jobs:
   lint-test-build:

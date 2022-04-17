@@ -9,8 +9,7 @@ on:
   workflow_dispatch: # To trigger manually
 
 env:
-  - name: STAGE
-    value: test
+  STAGE: test
 
 jobs:
   dockerize:
