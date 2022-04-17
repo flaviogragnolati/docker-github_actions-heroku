@@ -1,15 +1,16 @@
 import express from 'express';
-import dotenv from 'dotenv';
+import config from './config';
 
-dotenv.config();
+const { secret, port } = config;
 
 const app = express();
 
-const port = process.env.PORT || 6060;
-const secret = process.env.SECRET || 'ENV NOT LOADED';
-
 app.get('/', (req, res) => {
   return res.status(200).send(`Hello World!!!. This is a Secret ${secret}`);
+});
+
+app.get('/health', (req, res) => {
+  return res.status(200).send(`OK`);
 });
 
 app.listen(port, () => {

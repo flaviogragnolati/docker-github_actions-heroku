@@ -1,5 +1,5 @@
 # Lint+Test+Build+PR
-name: Nodejs Development Pipe
+name: Nodejs Development Pipeline
 
 on:
   push:
@@ -21,7 +21,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'yarn'
+          cache: "yarn"
       - run: yarn
       - run: yarn run lint
       - run: yarn run test
@@ -32,9 +32,16 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: testing
+      - name: Reset promotion branch
+        run: |
+          git fetch origin development:development
+          git reset --hard development
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         with:
-          title: 'Merge Develop to Testing'
-          branch: testing
+          title: "Merge Develop to Testing"
           labels: automated-pr
+          branch: dev->test/patch
+          delete-branch: true
