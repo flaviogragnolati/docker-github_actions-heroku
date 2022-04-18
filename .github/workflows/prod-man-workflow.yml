@@ -1,13 +1,13 @@
-# Dockerize & deploy to Heroku staging branch
-name: prod-workflow
+# Dockerize & deploy to Heroku specific tag
+name: prod-man-workflow
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
   workflow_dispatch: # To trigger manually
-
+    inputs:
+      version:
+        description: Tag Version
+        default: v0.0.1
+        required: true
 env:
   STAGE: prod
 
@@ -16,6 +16,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
+        ref: ${{ github.event.inputs.version }}
       - uses: akhileshns/heroku-deploy@v3.12.12
         with:
           stack: container
