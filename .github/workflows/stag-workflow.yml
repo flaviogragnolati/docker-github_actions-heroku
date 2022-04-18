@@ -1,0 +1,32 @@
+# Dockerize & deploy to Heroku
+name: stag-workflow
+
+on:
+  push:
+    branches: [staging]
+  pull_request:
+    branches: [staging]
+  workflow_dispatch: # To trigger manually
+
+env:
+  STAGE: stag
+
+jobs:
+  dockerize:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: akhileshns/heroku-deploy@v3.12.12
+        with:
+          stack: container
+          branch: "staging"
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: ${{secrets.HEROKU_APP_NAME}}-${{env.STAGE}}
+          heroku_email: ${{secrets.HEROKU_EMAIL}}
+          usedocker: true
+          docker_heroku_process_type: "web"
+          dontautocreate: true
+          healthcheck: "https://${{secrets.HEROKU_APP_NAME}}-${{env.STAGE}}.herokuapp.com/health"
+          checkstring: "OK.STAGE:${{env.STAGE}}"
+          delay: 5
+          rollbackonhealthcheckfailed: true

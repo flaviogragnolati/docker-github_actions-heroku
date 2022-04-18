@@ -1,0 +1,55 @@
+# Tag & Release
+name: tag-release-workflow
+
+on:
+  workflow_dispatch: # To trigger manually
+
+env:
+  STAGE: prod
+
+jobs:
+  tag-release:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: staging
+      - name: Bump version and push tag
+        id: tag_version
+        uses: anothrNick/github-tag-action@1.39.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WITH_V: true
+          RELEASE_BRANCHES: staging
+      # - name: Bump version and push tag
+      #   id: tag_version
+      #   uses: mathieudutour/github-tag-action@v6.0
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     release_branches: staging
+      #     append_to_pre_release_tag: ""
+      - name: Create a GitHub release
+        uses: ncipollo/release-action@v1.10.0
+        with:
+          tag: ${{ steps.tag_version.outputs.new_tag }}
+          name: Production Release ${{ steps.tag_version.outputs.new_tag }}
+          body: ${{ steps.tag_version.outputs.changelog }}
+          draft: true
+  pr-production:
+    needs: tag-release
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: main
+      - name: Reset promotion branch
+        run: |
+          git fetch origin staging:staging
+          git reset --hard staging
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4
+        with:
+          title: "Merge Staging to Main"
+          labels: automated-pr
+          branch: stag->prod/patch
+          delete-branch: true

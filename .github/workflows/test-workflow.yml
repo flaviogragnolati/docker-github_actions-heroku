@@ -1,0 +1,50 @@
+# Dockerize & deploy to Heroku
+name: test-workflow
+
+on:
+  push:
+    branches: [testing]
+  pull_request:
+    branches: [testing]
+  workflow_dispatch: # To trigger manually
+
+env:
+  STAGE: test
+
+jobs:
+  dockerize:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: akhileshns/heroku-deploy@v3.12.12
+        with:
+          stack: container
+          branch: "testing"
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: ${{secrets.HEROKU_APP_NAME}}-${{env.STAGE}}
+          heroku_email: ${{secrets.HEROKU_EMAIL}}
+          usedocker: true
+          docker_heroku_process_type: "web"
+          dontautocreate: true
+          healthcheck: "https://${{secrets.HEROKU_APP_NAME}}-${{env.STAGE}}.herokuapp.com/health"
+          checkstring: "OK.STAGE:${{env.STAGE}}"
+          delay: 5
+          rollbackonhealthcheckfailed: true
+  pr-staging:
+    needs: dockerize
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: staging
+      - name: Reset promotion branch
+        run: |
+          git fetch origin testing:testing
+          git reset --hard testing
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4
+        with:
+          title: "Merge Testing to Staging"
+          labels: automated-pr
+          branch: test->stag/patch
+          delete-branch: true
