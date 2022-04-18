@@ -1,50 +1,46 @@
-# # Dockerize & deploy to Heroku
-# name: Nodejs Staging Pipeline
+# Dockerize & deploy to Heroku
+name: prod-workflow
 
-# on:
-#   release:
-#         types: [created]
-#   workflow_dispatch: # To trigger manually
+on:
+  workflow_dispatch: # To trigger manually
 
-# env:
-#   - name: STAGE
-#     value: prod
+env:
+  STAGE: stag
 
-# jobs:
-#   dockerize:
-#     runs-on: ubuntu-20.04
-#     steps:
-#       - uses: actions/checkout@v2
-#       - uses: akhileshns/heroku-deploy@v3.12.12
-#         with:
-#           stack: container
-#           branch: "staging"
-#           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-#           heroku_app_name: ${{secrets.HEROKU_APP_NAME}}-${{env.STAGE}}
-#           heroku_email: ${{secrets.HEROKU_EMAIL}}
-#           usedocker: true
-#           docker_heroku_process_type: "web"
-#           dontautocreate: true
-#           healthcheck: "https://${{secrets.HEROKU_APP_NAME}}-${{env.STAGE}}.herokuapp.com/health"
-#           checkstring: "OK.STAGE:${{env.STAGE}}"
-#           delay: 5
-#           rollbackonhealthcheckfailed: true
-#   tag-release:
-#     needs: dockerize
-#     runs-on: ubuntu-20.04
-#     steps:
-#       - uses: actions/checkout@v3
-#         with:
-#           ref: staging
-#       - name: Bump version and push tag
-#         id: tag_version
-#           uses: mathieudutour/github-tag-action@v6.0
-#           with:
-#             github_token: ${{ secrets.GITHUB_TOKEN }}
-#       - name: Create a GitHub release
-#         uses: ncipollo/release-action@v1.10
-#         with:
-#           tag: ${{ steps.tag_version.outputs.new_tag }}
-#           name: Production Release ${{ steps.tag_version.outputs.new_tag }}
-#           body: ${{ steps.tag_version.outputs.changelog }}
-
+jobs:
+  tag-release:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: staging
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create a GitHub release
+        uses: ncipollo/release-action@v1.10
+        with:
+          tag: ${{ steps.tag_version.outputs.new_tag }}
+          name: Production Release ${{ steps.tag_version.outputs.new_tag }}
+          body: ${{ steps.tag_version.outputs.changelog }}
+          draft: true
+  pr-production:
+    needs: tag-release
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: main
+      - name: Reset promotion branch
+        run: |
+          git fetch origin staging:staging
+          git reset --hard staging
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4
+        with:
+          title: "Merge Staging to Main"
+          labels: automated-pr
+          branch: stag->prod/patch
+          delete-branch: true
