@@ -1,5 +1,5 @@
 # Dockerize & deploy to Heroku
-name: Nodejs Testing Pipeline
+name: test-workflow
 
 on:
   push:

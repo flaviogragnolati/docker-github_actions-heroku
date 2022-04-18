@@ -1,5 +1,5 @@
 # Lint+Test+Build+PR
-name: Nodejs Development Pipeline
+name: dev-workflow
 
 on:
   push:
