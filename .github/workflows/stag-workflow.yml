@@ -30,12 +30,3 @@ jobs:
           checkstring: "OK.STAGE:${{env.STAGE}}"
           delay: 5
           rollbackonhealthcheckfailed: true
-  prod-release:
-    needs: dockerize
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Release to production
-        uses: benc-uk/workflow-dispatch@v1.1
-        with:
-          workflow: prod-workflow
-          token: ${{ secrets.PERSONAL_TOKEN }}
